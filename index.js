@@ -83,19 +83,33 @@ $(document).ready(function() {
   // Card image test (testing firebase storage functionality)
   // setCardImage("Playing_card_club_A.svg","cardimage");
 
+  var touchstartx = 0;
+  var touchstarty = 0;
   // add touh events to each card to allow move or flip
   var elem = document.getElementsByClassName("card");
   for (var i = 0; i < elem.length; i++) {
     elem[i].addEventListener("touchmove", function(e) {
       selectCard(e, this);
     });
-    //    elem[i].addEventListener("mousedown mousemove", function(e) {selectCard(e, this)});
-    elem[i].addEventListener("touchend", function(e) {
-      unselectCard(e, this);
-    });
     //    elem[i].addEventListener("mouseup", function(e) {unselectCard(e, this)});
     elem[i].addEventListener("click", function(e) {
       flipCard(e, this);
+    });
+    elem[i].addEventListener("touchstart", function(e) {
+      touchstartx = parseInt(e.changedTouches[0].clientX); // get x coord of touch point
+      touchstarty = parseInt(e.changedTouches[0].clientY); // get y coord of touch point
+      e.preventDefault() // prevent default click behavior
+    });
+    //    elem[i].addEventListener("mousedown mousemove", function(e) {selectCard(e, this)});
+    elem[i].addEventListener("touchend", function(e) {
+      e.preventDefault() // prevent default click behavior
+      var touchendx =  parseInt(e.changedTouches[0].clientX);
+      var touchendy =  parseInt(e.changedTouches[0].clientY);
+      if ( Math.abs(touchendx-touchstartx) < 10 && Math.abs(touchendy-touchstarty) < 10) {
+        flipCard(e, this);
+      } else {
+        unselectCard(e, this);
+      }
     });
 
   }
@@ -173,7 +187,6 @@ function setCardImage(imagename, elemID) {
  * Select card 
  */
 function selectCard(e, t) {
-  e.preventDefault();
 
   var posx = parseInt( e.touches[0].clientX - table.position().left - parseInt($(".card").css("width")) * 3/4 ) + "px";
   var posy = parseInt( e.touches[0].clientY - table.position().top - parseInt($(".card").css("height")) * 3/4 ) + "px";
@@ -202,7 +215,6 @@ function unselectCard(e, t) {
      "posz" : parseInt($(t).css("z-index"))+1, 
      "facedown":$(t).hasClass("highlight") 
      });
-
 }
 
 function prepTableMemoryGame() {
@@ -270,6 +282,7 @@ function checkInside(item, region) {
 
 
 function flipCard(e, t) {
+  console.log("in flipCard");
   e.preventDefault();
 
   var cc = database.ref("game123/cardpos/" + t.id );
