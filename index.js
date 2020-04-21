@@ -120,7 +120,7 @@ $(document).ready(function() {
   document.getElementById("showcardscircle").addEventListener("click", showCardsCircle);
   document.getElementById("flipup").addEventListener("click", flipAllUp);
   document.getElementById("flipdown").addEventListener("click", flipAllDown);
-  document.getElementById("order").addEventListener("click", function() {
+  document.getElementById("order").addEventListener("click", function(e) {
     cardsOrder.sort(function(a, b) {
       return a - b;
     });
@@ -282,8 +282,8 @@ function checkInside(item, region) {
 
 
 function flipCard(e, t) {
-  console.log("in flipCard");
-  e.preventDefault();
+  // console.log("in flipCard");
+  // e.preventDefault();
 
   var cc = database.ref("game123/cardpos/" + t.id );
   cc.once("value")
@@ -305,18 +305,7 @@ function flipCard(e, t) {
   //   }
 
   // });
-}
-function flipAllUp() {
-  for (var j = 0; j < cardsID.length; j++) {
-      database.ref("game123/cardpos/" + cardsID[cardsOrder[j]] + "/facedown/").set(false);
-  }
-}
 
-function flipAllDown() {
-  for (var j = 0; j < cardsID.length; j++) {
-      database.ref("game123/cardpos/" + cardsID[cardsOrder[j]] + "/facedown/").set(true);
-  }
-}
 
 /* https://en.wikipedia.org/wiki/Playing_cards_in_Unicode */
 function genDeck() {
@@ -510,6 +499,24 @@ function showCardsCircle() {
   // should not be needed:  updateCardsDisplayOnTable();
 }
 
+// @TODO
+// [ ] get all data "once", change "flip" and then write with 1 transaction
+// Use Update rather than set : https://stackoverflow.com/questions/38923644/firebase-update-vs-set
+// Use a list to update all cards at once. { 3C/facedown/: true, 3H/facedow: true, etc.}
+}
+function flipAllUp() {
+  for (var j = 0; j < cardsID.length; j++) {
+      database.ref("game123/cardpos/" + cardsID[cardsOrder[j]] + "/facedown/").set(false);
+  }
+
+  
+}
+
+function flipAllDown() {
+x#  for (var j = 0; j < cardsID.length; j++) {
+      database.ref("game123/cardpos/" + cardsID[cardsOrder[j]] + "/facedown/").set(true);
+  }
+}
 
 /**
  * Update the graphical display of the cards on the prepTable
