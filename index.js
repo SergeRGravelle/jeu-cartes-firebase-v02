@@ -111,7 +111,6 @@ $(document).ready(function() {
         unselectCard(e, this);
       }
     });
-
   }
 
   // add functions to each button 
@@ -144,6 +143,8 @@ $(document).ready(function() {
     });
     updateTable();
   });
+
+
 });
 
 
@@ -295,7 +296,6 @@ function flipCard(e, t) {
       database.ref("game123/cardpos/" + t.id + "/facedown/").set(true);
     }
   });
-
  
   // database.ref("game123/cardpos/" + t.id + "/facedown/").once("value", function(data) {
   //   if (data.val()) {
@@ -305,7 +305,7 @@ function flipCard(e, t) {
   //   }
 
   // });
-
+}
 
 /* https://en.wikipedia.org/wiki/Playing_cards_in_Unicode */
 function genDeck() {
@@ -502,18 +502,16 @@ function showCardsCircle() {
 // @TODO
 // [ ] get all data "once", change "flip" and then write with 1 transaction
 // Use Update rather than set : https://stackoverflow.com/questions/38923644/firebase-update-vs-set
-// Use a list to update all cards at once. { 3C/facedown/: true, 3H/facedow: true, etc.}
-}
+// Use a list to update all cards at once. { 3C/facedown/: true, 3H/facedow: true, etc.}}
+
 function flipAllUp() {
   for (var j = 0; j < cardsID.length; j++) {
       database.ref("game123/cardpos/" + cardsID[cardsOrder[j]] + "/facedown/").set(false);
   }
-
-  
 }
 
 function flipAllDown() {
-x#  for (var j = 0; j < cardsID.length; j++) {
+ for (var j = 0; j < cardsID.length; j++) {
       database.ref("game123/cardpos/" + cardsID[cardsOrder[j]] + "/facedown/").set(true);
   }
 }
