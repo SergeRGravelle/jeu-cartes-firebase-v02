@@ -76,6 +76,10 @@ var storage = firebase.storage();
  */
 $(document).ready(function() {
 
+  // firebase.database().ref().child('/cardpos/10C/facedown/').update(true);
+  // debugger;
+
+
   // setup table and generate card deck  
   prepTableMemoryGame();
   genDeck();
@@ -289,13 +293,20 @@ function flipCard(e, t) {
   var cc = database.ref("game123/cardpos/" + t.id );
   cc.once("value")
     .then(function(snapshot) {
-      console.log("key: " + snapshot.key + "  facedown: " + snapshot.child("facedown").val() );
      if (snapshot.child("facedown").val()) {
-      database.ref("game123/cardpos/" + t.id + "/facedown/").set(false);
+      database.ref("game123/cardpos/" + t.id).update({ facedown: false });
     } else {
-      database.ref("game123/cardpos/" + t.id + "/facedown/").set(true);
+      database.ref("game123/cardpos/" + t.id).update({ facedown: true });
     }
   });
+  //    .then(function(snapshot) {
+  //     console.log("key: " + snapshot.key + "  facedown: " + snapshot.child("facedown").val() );
+  //    if (snapshot.child("facedown").val()) {
+  //     database.ref("game123/cardpos/" + t.id + "/facedown/").set(false);
+  //   } else {
+  //     database.ref("game123/cardpos/" + t.id + "/facedown/").set(true);
+  //   }
+  // });
  
   // database.ref("game123/cardpos/" + t.id + "/facedown/").once("value", function(data) {
   //   if (data.val()) {
@@ -505,15 +516,23 @@ function showCardsCircle() {
 // Use a list to update all cards at once. { 3C/facedown/: true, 3H/facedow: true, etc.}}
 
 function flipAllUp() {
+
+  var updates = {};  
   for (var j = 0; j < cardsID.length; j++) {
-      database.ref("game123/cardpos/" + cardsID[cardsOrder[j]] + "/facedown/").set(false);
+      updates[cardsID[cardsOrder[j]]]={ facedown: false};
   }
+  database.ref("game123/cardpos/").update(updates);
 }
 
 function flipAllDown() {
- for (var j = 0; j < cardsID.length; j++) {
-      database.ref("game123/cardpos/" + cardsID[cardsOrder[j]] + "/facedown/").set(true);
+//  for (var j = 0; j < cardsID.length; j++) {
+//       database.ref("game123/cardpos/" + cardsID[cardsOrder[j]] + "/facedown/").set(true);
+//   }
+  var updates = {};  
+  for (var j = 0; j < cardsID.length; j++) {
+      updates[cardsID[cardsOrder[j]]]={ facedown: true};
   }
+  database.ref("game123/cardpos/").update(updates);
 }
 
 /**
