@@ -11,24 +11,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body class="lock-screen">
-  
-  <h2>Table et jeu de carte virtuel</h2>
-    <button id="showcards">show rectangle</button>
-    <button id="showcardscircle">show circle</button>
-    <button id="shuffle">shuffle</button>
-    <button id="order">order</button>
-    <button id="flipup">flip up</button>
-    <button id="flipdown">flip down</button>
+
+<div>
+  <h3 style="text-align:center">Jeu de carte virtuel</h3>
+</div>
+
+<!-- Three columns -->
+<div class="row">
+  <div class="column tablobby" onclick="openTab('b1');" > Lobby </div>
+  <div class="column tabtable" onclick="openTab('b2');" > Table </div>
+</div>
+
+<!-- Full-width columns: (hidden by default) -->
+<div id="b1" class="containerTab tablobby" style="display:block">
+  <h2>Lobby</h2>
+  <p>asdlfjasdlfjasdf</p>
+</div>
+
+<div id="b2" class="containerTab tabtable" style="display:none">
+
+  <button id="showcards">show rectangle</button>
+  <button id="showcardscircle">show circle</button>
+  <button id="shuffle">shuffle</button>
+  <button id="order">order</button>
+  <button id="flipup">flip up</button>
+  <button id="flipdown">flip down</button>
   
   <div id="table">
     <!--
     <img id="cardimage" width="42" height="42">
     <div id="stock">stock</div>
     -->
-
     <div id="deck"></div>
     <div id="info"></div>
   </div>
 
+</div>
+
+
+<script>
+  function openTab(tabName) {
+    var x = document.getElementsByClassName("containerTab");
+    for (var i = 0; i < x.length; i++) {
+      x[i].style.display = "none";
+    }
+    document.getElementById(tabName).style.display = "block";
+  }
+</script>
 </body>
 </html>

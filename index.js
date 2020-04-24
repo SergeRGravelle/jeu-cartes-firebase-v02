@@ -396,8 +396,8 @@ function genDeck() {
 
   }
   // console.log(JSON.stringify(cardsPosDataObjects));
-  database.ref("game123/cardpos/").set(cardsPosDataObjects) ;
-  // debugger;
+  database.ref("game123/cardpos/").update(cardsPosDataObjects) ;
+  debugger;
 }
 
 /**
