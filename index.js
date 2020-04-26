@@ -18,6 +18,8 @@ import "firebase/storage";
 
 const card = $(".card");
 const table = $("#table");
+const board = $("#b2");
+
 var selected = null;
 var selectedlast = null;
 var topz = 1;
@@ -193,8 +195,8 @@ function setCardImage(imagename, elemID) {
  */
 function selectCard(e, t) {
 
-  var posx = parseInt( e.touches[0].clientX - table.position().left - parseInt($(".card").css("width")) * 3/4 ) + "px";
-  var posy = parseInt( e.touches[0].clientY - table.position().top - parseInt($(".card").css("height")) * 3/4 ) + "px";
+  var posx = parseInt( e.touches[0].clientX - table.position().left - board.position().left - parseInt($(".card").css("width")) * 3/4 ) + "px";
+  var posy = parseInt( e.touches[0].clientY - table.position().top - board.position().top - parseInt($(".card").css("height")) * 3/4 ) + "px";
   var posz = $(t).css("z-index");
    $(t).css({ left: posx, top: posy });
 
@@ -320,82 +322,73 @@ function flipCard(e, t) {
 
 /* https://en.wikipedia.org/wiki/Playing_cards_in_Unicode */
 function genDeck() {
+
+  var cardsPosDataObjects = {};
   var c = 0;
-  topz = 1;
+  var topz = 1;
+
   for (var j = 1; j <= 13; j++) {
-    var sp = 25;
-    var leftpos = 200;
-    var toppos = 150;
+    var sp = 35;
+    var leftpos = 250;
+    var toppos = 100;
 
-    // diamond
-    var newcard = $("<div></div>").text(VAL[j - 1] + " \u2666");
-    cardsID.push(j + "D");
+    // Diamond
+    var newcard = document.createElement("DIV");
+    deck.appendChild(newcard);     
+    newcard.innerHTML = VAL[j - 1] + "<br>\u2666";
+    newcard.classList.add("card", "redcard");
+    newcard.id = j + "D";
+    cardsID.push(newcard.id);
     cardsOrder.push(c++);
-    newcard.attr("id", j + "D");
-    newcard.addClass("card redcard");
-    newcard.css({
-      left: parseInt(leftpos + (j * sp) / 2) + "px",
-      top: parseInt(toppos + j * sp) + "px"
-    });
-    newcard.css({ "z-index": topz++ });
-    // newcard.css({transform: "rotate(2deg)"});
-    $("#deck").append(newcard);
+    cardsPosDataObjects[newcard.id]={
+        posx : parseInt(leftpos + (j * sp) / 2),
+        posy:  parseInt(toppos + j * sp),
+        posz:  topz++, facedown:false 
+      };
 
-    // hearts
-    var newcard = $("<div></div>").text(VAL[j - 1] + " \u2665");
-    cardsID.push(j + "H");
+    // Hearts
+    var newcard = document.createElement("DIV");
+    deck.appendChild(newcard);     
+    newcard.innerHTML = VAL[j - 1] + "<br>\u2665";
+    newcard.classList.add("card", "redcard");
+    newcard.id = j + "H";
+    cardsID.push(newcard.id);
     cardsOrder.push(c++);
-    newcard.attr("id", j + "H");
-    newcard.addClass("card redcard");
-    newcard.css({
-      left: parseInt(leftpos + sp * 1 + (j * sp) / 2) + "px",
-      top: parseInt(toppos + j * sp + sp / 8) + "px"
-    });
-    newcard.css({ "z-index": topz++ });
-    // newcard.css({transform: "rotate(-3deg)"});
-    // newcard.css({ transform: "scale(1.1)"});
-    $("#deck").append(newcard);
+    cardsPosDataObjects[newcard.id]={
+        posx : parseInt(leftpos + (j * sp) / 2 + sp*2),
+        posy:  parseInt(toppos + j * sp),
+        posz:  topz++, facedown:false 
+      };
 
-    // spades
-    var newcard = $("<div></div>").text(VAL[j - 1] + " \u2660");
-    cardsID.push(j + "S");
+    // Spades
+    var newcard = document.createElement("DIV");
+    deck.appendChild(newcard);     
+    newcard.innerHTML = VAL[j - 1] + "<br>\u2660";
+    newcard.classList.add("card", "blackcard");
+    newcard.id = j + "S";
+    cardsID.push(newcard.id);
     cardsOrder.push(c++);
-    newcard.attr("id", j + "S");
-    newcard.addClass("card blackcard");
-    newcard.css({
-      left: parseInt(leftpos + sp * 2 + (j * sp) / 2) + "px",
-      top: parseInt(toppos + j * sp + (sp * 2) / 8) + "px"
-    });
-    newcard.css({ "z-index": topz++ });
-    // newcard.css({transform: "rotate(4deg)"});
-    $("#deck").append(newcard);
+    cardsPosDataObjects[newcard.id]={
+        posx : parseInt(leftpos + (j * sp) / 2 + sp*4),
+        posy:  parseInt(toppos + j * sp),
+        posz:  topz++, facedown:false 
+      };
 
     // clubs
-    cardsID.push(j + "C");
+    var newcard = document.createElement("DIV");
+    deck.appendChild(newcard);     
+    newcard.innerHTML = VAL[j - 1] + "<br>\u2663";
+    newcard.classList.add("card", "blackcard");
+    newcard.id = j + "C";
+    cardsID.push(newcard.id);
     cardsOrder.push(c++);
-    var newcard = $("<div></div>").text(VAL[j - 1] + " \u2663");
-    newcard.attr("id", j + "C");
-    newcard.addClass("card blackcard");
-    newcard.css({
-      left: parseInt(leftpos + sp * 3 + (j * sp) / 2) + "px",
-      top: parseInt(toppos + j * sp + (sp * 3) / 8) + "px"
-    });
-    newcard.css({ "z-index": topz++ }); 
-    $("#deck").append(newcard);
+    cardsPosDataObjects[newcard.id]={
+        posx : parseInt(leftpos + (j * sp) / 2 + sp*6),
+        posy:  parseInt(toppos + j * sp),
+        posz:  topz++, facedown:false 
+      };
   }
-  // $("#info").text(cardsOrder.toString());
-
-  // cardsPosData
-  var cardsPosDataObjects = {};
-  for (var o of cardsID){
-    cardsPosDataObjects[o] = {
-                          "posx":parseInt($("#" + o).position().left), 
-                          "posy":parseInt($("#" + o).position().top),
-                          "posz":parseInt($("#" + o).css("z-index")),
-                          "facedown":false  };
-
-  }
-  // console.log(JSON.stringify(cardsPosDataObjects));
+  console.log(JSON.stringify(cardsPosDataObjects));  debugger;
   database.ref("game123/cardpos/").update(cardsPosDataObjects) ;
   debugger;
 }
@@ -430,7 +423,6 @@ function testShuffle() {
 
   cardsOrder = list;
 }
-
 
 /**
  * Layout position of cards on the table
@@ -469,7 +461,6 @@ function showCards() {
 
   // should not be needed:  updateCardsDisplayOnTable();
 }
-
 
 /**
  * Layout position of cards on the table
@@ -510,11 +501,6 @@ function showCardsCircle() {
   // should not be needed:  updateCardsDisplayOnTable();
 }
 
-// @TODO
-// [ ] get all data "once", change "flip" and then write with 1 transaction
-// Use Update rather than set : https://stackoverflow.com/questions/38923644/firebase-update-vs-set
-// Use a list to update all cards at once. { 3C/facedown/: true, 3H/facedow: true, etc.}}
-
 function flipAllUp() {
 
   var updates = {};  
@@ -525,9 +511,6 @@ function flipAllUp() {
 }
 
 function flipAllDown() {
-//  for (var j = 0; j < cardsID.length; j++) {
-//       database.ref("game123/cardpos/" + cardsID[cardsOrder[j]] + "/facedown/").set(true);
-//   }
   var updates = {};  
   for (var j = 0; j < cardsID.length; j++) {
       updates[cardsID[cardsOrder[j]]]={ facedown: true};
