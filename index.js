@@ -429,7 +429,7 @@ function testShuffle() {
  */
 function showCards() {
   var topPos = 180;
-  var leftPos = 220;
+  var leftPos = 240;
   var maxRow = 12;
   var numRow = 1;
   var topz = 1;
@@ -447,12 +447,12 @@ function showCards() {
                         "facedown":elem.hasClass("highlight") } ;
                           // do not change "face-down"
 
-    leftPos += elem.outerWidth();
+    leftPos += elem.outerWidth() + 10;
     
     if (numRow++ >= maxRow) {
       numRow = 1;
-      topPos += elem.outerHeight();
-      leftPos = 220;
+      topPos += elem.outerHeight() + 10;
+      leftPos = 240;
     }
 
   }
