@@ -85,6 +85,7 @@ $(document).ready(function() {
   // setup table and generate card deck  
   prepTableMemoryGame();
   genDeck();
+  drawCardsOnce();
 
   // Card image test (testing firebase storage functionality)
   // setCardImage("Playing_card_club_A.svg","cardimage");
@@ -122,7 +123,9 @@ $(document).ready(function() {
   // add functions to each button 
   document.getElementById("shuffle").addEventListener("click", testShuffle);
   document.getElementById("showcards").addEventListener("click", showCards);
+  document.getElementById("showcardsdeck").addEventListener("click", showCardsDeck);
   document.getElementById("showcardscircle").addEventListener("click", showCardsCircle);
+  document.getElementById("showcardsstacked").addEventListener("click", showCardsStacked);
   document.getElementById("flipup").addEventListener("click", flipAllUp);
   document.getElementById("flipdown").addEventListener("click", flipAllDown);
   document.getElementById("order").addEventListener("click", function(e) {
@@ -154,9 +157,31 @@ $(document).ready(function() {
 });
 
 
+function drawCardsOnce() {
+
+  database.ref("game123/cardpos/").once("value", function(snapshot) {
+    snapshot.forEach(function(data) {
+      var elem = $("#" + data.key);
+      var o = data.val();
+      elem.animate({ "left": o.posx + "px", 
+                    "top":  o.posy + "px" });
+      elem.css({ "z-index":  o.posz });
+
+      if (o.facedown) {
+        elem.addClass("highlight");
+      } else {
+        elem.removeClass("highlight");
+      }
+    });
+    updateTable();
+  });
+}
+
+
+
 /**
  * Set the image stored in the Firebase storage to an image getElementById
- * Process errors correctly
+ * Process errors correctly 
  * 
  */
 function setCardImage(imagename, elemID) {
@@ -195,13 +220,13 @@ function setCardImage(imagename, elemID) {
  */
 function selectCard(e, t) {
 
-  var posx = parseInt( e.touches[0].clientX - table.position().left - board.position().left - parseInt($(".card").css("width")) * 3/4 ) + "px";
-  var posy = parseInt( e.touches[0].clientY - table.position().top - board.position().top - parseInt($(".card").css("height")) * 3/4 ) + "px";
+  var posx = parseInt( e.touches[0].clientX - table.position().left - board.position().left - parseInt($(".card").css("width"))*4/3) + "px";
+  var posy = parseInt( e.touches[0].clientY - table.position().top  - board.position().top  - parseInt($(".card").css("height"))*4/3) + "px";
   var posz = $(t).css("z-index");
    $(t).css({ left: posx, top: posy });
 
   if (selected != selectedlast) {
-    $(t).css({ "z-index": topz++ });
+    $(t).css({ "z-index": posz++ });
   }
   selected = $(t);
   selectedlast = selected;
@@ -219,7 +244,7 @@ function unselectCard(e, t) {
   database.ref("game123/cardpos/" + t.id).set( {
      "posx" : parseInt($(t).position().left), 
      "posy" : parseInt($(t).position().top), 
-     "posz" : parseInt($(t).css("z-index"))+1, 
+     "posz" : parseInt($(t).css("z-index")), 
      "facedown":$(t).hasClass("highlight") 
      });
 }
@@ -325,13 +350,9 @@ function genDeck() {
 
   var cardsPosDataObjects = {};
   var c = 0;
-  var topz = 1;
 
   for (var j = 1; j <= 13; j++) {
-    var sp = 35;
-    var leftpos = 250;
-    var toppos = 100;
-
+  
     // Diamond
     var newcard = document.createElement("DIV");
     deck.appendChild(newcard);     
@@ -340,11 +361,6 @@ function genDeck() {
     newcard.id = j + "D";
     cardsID.push(newcard.id);
     cardsOrder.push(c++);
-    cardsPosDataObjects[newcard.id]={
-        posx : parseInt(leftpos + (j * sp) / 2),
-        posy:  parseInt(toppos + j * sp),
-        posz:  topz++, facedown:false 
-      };
 
     // Hearts
     var newcard = document.createElement("DIV");
@@ -354,11 +370,6 @@ function genDeck() {
     newcard.id = j + "H";
     cardsID.push(newcard.id);
     cardsOrder.push(c++);
-    cardsPosDataObjects[newcard.id]={
-        posx : parseInt(leftpos + (j * sp) / 2 + sp*2),
-        posy:  parseInt(toppos + j * sp),
-        posz:  topz++, facedown:false 
-      };
 
     // Spades
     var newcard = document.createElement("DIV");
@@ -368,12 +379,7 @@ function genDeck() {
     newcard.id = j + "S";
     cardsID.push(newcard.id);
     cardsOrder.push(c++);
-    cardsPosDataObjects[newcard.id]={
-        posx : parseInt(leftpos + (j * sp) / 2 + sp*4),
-        posy:  parseInt(toppos + j * sp),
-        posz:  topz++, facedown:false 
-      };
-
+  
     // clubs
     var newcard = document.createElement("DIV");
     deck.appendChild(newcard);     
@@ -382,16 +388,9 @@ function genDeck() {
     newcard.id = j + "C";
     cardsID.push(newcard.id);
     cardsOrder.push(c++);
-    cardsPosDataObjects[newcard.id]={
-        posx : parseInt(leftpos + (j * sp) / 2 + sp*6),
-        posy:  parseInt(toppos + j * sp),
-        posz:  topz++, facedown:false 
-      };
   }
-  console.log(JSON.stringify(cardsPosDataObjects));  debugger;
-  database.ref("game123/cardpos/").update(cardsPosDataObjects) ;
-  debugger;
 }
+
 
 /**
  * Generates a random number between A and B
@@ -455,12 +454,87 @@ function showCards() {
       leftPos = 240;
     }
 
+
   }
   //  console.log( JSON.stringify(cardsPosDataObjects) ); debugger;
   database.ref("game123/cardpos/").set(cardsPosDataObjects);
 
   // should not be needed:  updateCardsDisplayOnTable();
 }
+
+function showCardsStacked() {
+
+  var sp = 35;
+  var leftpos = 250;
+  var toppos = 100;
+
+  var cardsPosDataObjects = {};
+
+  for (var j=1 ; j<=13; j++){
+
+     cardsPosDataObjects[j + "D"]={
+        posx : parseInt(leftpos + (j * sp) / 2),
+        posy:  parseInt(toppos + j * sp),
+        posz:  topz++, facedown:false 
+      };
+
+    cardsPosDataObjects[j + "H"]={
+        posx : parseInt(leftpos + (j * sp) / 2 + sp*2),
+        posy:  parseInt(toppos + j * sp),
+        posz:  topz++, facedown:false 
+      };
+
+    cardsPosDataObjects[j + "S"]={
+        posx : parseInt(leftpos + (j * sp) / 2 + sp*4),
+        posy:  parseInt(toppos + j * sp),
+        posz:  topz++, facedown:false 
+      };
+    cardsPosDataObjects[j + "C"]={
+        posx : parseInt(leftpos + (j * sp) / 2 + sp*6),
+        posy:  parseInt(toppos + j * sp),
+        posz:  topz++, facedown:false 
+      };
+
+  }
+  database.ref("game123/cardpos/").update(cardsPosDataObjects) ;
+
+}
+
+
+/**
+ * Layout position of cards on the table
+ */
+function showCardsDeck() {
+  var posCx = $("#table").outerWidth()/2 - parseInt($(".card").css("width"))/2 ;
+  var posCy = $("#table").outerHeight()/2 - parseInt($(".card").css("height"))/2 ;
+ 
+  var posR = 1;
+  var posDeg = 10;
+  var topz = 1;
+  
+  var cardsPosDataObjects = {};
+ 
+  // cardsPosData.length = 0;  // clear array
+
+  for (var j = 0; j < cardsOrder.length; j++) {
+    var leftPos = parseInt(posCx) + parseInt(posR*Math.sin(j/52*Math.PI*2));
+    var topPos = parseInt(posCy) + parseInt(posR*Math.cos(j/52*Math.PI*2));
+
+    var elem = $("#" + cardsID[cardsOrder[j]]);
+    cardsPosDataObjects[cardsID[cardsOrder[j]]] = {
+                        "posx": leftPos, 
+                        "posy": topPos,
+                        "posz": topz++,
+                        "facedown":elem.hasClass("highlight") } ;
+                          // do not change "face-down"
+
+  }
+  console.log( JSON.stringify(cardsPosDataObjects) ); debugger;
+  database.ref("game123/cardpos/").set(cardsPosDataObjects);
+
+  // should not be needed:  updateCardsDisplayOnTable();
+}
+
 
 /**
  * Layout position of cards on the table
