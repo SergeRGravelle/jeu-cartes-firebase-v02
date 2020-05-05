@@ -575,21 +575,41 @@ function showCardsCircle() {
   // should not be needed:  updateCardsDisplayOnTable();
 }
 
-function flipAllUp() {
 
-  var updates = {};  
-  for (var j = 0; j < cardsID.length; j++) {
-      updates[cardsID[cardsOrder[j]]]={ facedown: false};
-  }
-  database.ref("game123/cardpos/").update(updates);
-}
 
 function flipAllDown() {
-  var updates = {};  
-  for (var j = 0; j < cardsID.length; j++) {
-      updates[cardsID[cardsOrder[j]]]={ facedown: true};
-  }
-  database.ref("game123/cardpos/").update(updates);
+  // This does not work... removes posx, posy, posz info
+  // var updates = {};  
+  // for (var j = 0; j < cardsID.length; j++) {
+  //     updates[cardsID[cardsOrder[j]]]={ facedown: true};
+  // }
+  // database.ref("game123/cardpos/").update(updates);
+
+  // Too slow
+  // for (var j = 0; j < cardsID.length; j++) {
+  //   database.ref("game123/cardpos/" + cardsID[cardsOrder[j]]).update({ facedown: true });
+  // }
+
+  var updates = {};   
+  database.ref("game123/cardpos/").once("value", function(snapshot) {
+      snapshot.forEach(function(data) {
+        var o = data.val();
+        updates[data.key]={ posx : o.posx, posy : o.posy, posz: o.posz, facedown: true};
+      });
+  });
+ database.ref("game123/cardpos/").update(updates);
+}
+
+function flipAllUp() {
+  var updates = {};   
+  database.ref("game123/cardpos/").once("value", function(snapshot) {
+      snapshot.forEach(function(data) {
+        var o = data.val();
+        updates[data.key]={ posx : o.posx, posy : o.posy, posz: o.posz, facedown: false};
+      });
+  });
+  
+ database.ref("game123/cardpos/").update(updates);
 }
 
 /**

@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "@firebase/app": "^0.6.1",
-    "firebase": "7.14.0",
-    "jquery": "3.4.1"
+    "@firebase/app": "^0.6.2",
+    "firebase": "7.14.2"
   }
 }
