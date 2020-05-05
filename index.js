@@ -12,14 +12,13 @@ import "firebase/firestore";  // Cloud Firestore
 import "firebase/database";   // real-time database
 import "firebase/storage";
 
-
-
-// Global variables
-
+// Document elements
 const card = $(".card");
 const table = $("#table");
 const board = $("#b2");
+const loginUserButton = document.getElementById('loginUser');
 
+// Global variables
 var selected = null;
 var selectedlast = null;
 var topz = 1;
@@ -45,6 +44,48 @@ firebase.initializeApp(firebaseConfig);
 var database = firebase.database();
 // Create a reference with an initial file path and name
 var storage = firebase.storage();
+
+// FirebaseUI config
+const uiConfig = {
+  credentialHelper: firebaseui.auth.CredentialHelper.NONE,
+  signInOptions: [
+    // Email / Password Provider.
+    firebase.auth.EmailAuthProvider.PROVIDER_ID
+  ],
+  callbacks: {
+    signInSuccessWithAuthResult: function(authResult, redirectUrl){
+      // Handle sign-in.
+      // Return false to avoid redirect.
+      return false;
+    }
+  }
+};
+
+// Initialize the FIrebaseUI Widget using Firebase
+const ui = new firebaseui.auth.AuthUI(firebase.auth());
+
+// Called when the user clicks the RSVP button
+loginUserButton.addEventListener("click",
+ () => {
+    if (firebase.auth().currentUser) {
+      // User is signed in; allows user to sign out
+      firebase.auth().signOut();
+    } else {
+      // No user is signed in; allows user to sign in
+      ui.start("#firebaseui-auth-container", uiConfig);
+    }
+});
+
+// Listen to the current Auth state
+firebase.auth().onAuthStateChanged((user)=> {
+  if (user) {
+    loginUserButton.textContent = "Logout"
+  }
+  else {
+    loginUserButton.textContent = "Login"
+  }
+});
+
 
 /*  --- TESTS WAYS OF ADDINT DATA TO A REALTIME DATABASE IN FIREBASE  ----
   // test writing data to realtime database
