@@ -13,6 +13,12 @@ body {
   bottom: 5px;
   left: 10px;
 }
+#loggedInUser {
+  padding: 8px;
+  float: center;
+  text-align: center;
+  font-size: 18px;
+}
 button {
   position: relative;
 
@@ -20,7 +26,7 @@ button {
 #table {
   left: 4%; width: 92%;
   top: 4%; height: 92%;
-  background: rgb(221, 186, 186);
+  background: rgb(178, 144, 111);
   border-style: solid;
   border-radius: 20px;
   border-color: white;

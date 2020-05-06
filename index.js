@@ -79,10 +79,13 @@ loginUserButton.addEventListener("click",
 // Listen to the current Auth state
 firebase.auth().onAuthStateChanged((user)=> {
   if (user) {
-    loginUserButton.textContent = "Logout"
+    loginUserButton.textContent = "Logout";
+    document.getElementById("loggedInUser").innerHTML = "" + firebase.auth().currentUser.displayName + "";
+  //  userId: firebase.auth().currentUser.uid
   }
   else {
     loginUserButton.textContent = "Login"
+    document.getElementById("loggedInUser").innerHTML = "...";
   }
 });
 
