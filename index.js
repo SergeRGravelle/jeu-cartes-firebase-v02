@@ -26,6 +26,7 @@ const VAL = new Array("A","2","3","4","5","6", "7", "8", "9", "10", "J", "Q", "K
 var cardsID = [];
 var cardsOrder = [];
 var rejects = [];
+var chair = 0;
 
 // Your web app's Firebase configuration
 var firebaseConfig = {
@@ -680,3 +681,25 @@ function updateCardsDisplayOnTable() {
   });
 
 }
+
+
+  
+  function relToAbsPosition(posx, posy) {
+      var posCx = $("#table").outerWidth()/2;
+      var posCy = $("#table").outerHeight()/2;
+ 
+      var dx = posx - posCx;
+      var dy = posy - posCy;
+    return { deg: Math.atan2(dy, dx), 
+             r:   Math.round ( Math.sqrt( dx*dx + dy*dy) ) }
+  }
+
+  function absToRelPosition(deg, r) {
+      var posCx = $("#table").outerWidth()/2;
+      var posCy = $("#table").outerHeight()/2;
+
+    return { posx: (r*Math.cos(deg - chair*2*Math.PI) + posCx), 
+             posy: (r*Math.sin(deg - chair*2*Math.PI) + posCy) }
+    // return { posx: (parseInt(r*Math.cos(-deg - chair*2*Math.PI)) + cx), 
+    //         posy: (parseInt(r*Math.sin(-deg - chair*2*Math.PI)) + cy) }
+  }
