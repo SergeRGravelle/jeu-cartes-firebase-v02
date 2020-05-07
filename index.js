@@ -26,7 +26,7 @@ const VAL = new Array("A","2","3","4","5","6", "7", "8", "9", "10", "J", "Q", "K
 var cardsID = [];
 var cardsOrder = [];
 var rejects = [];
-var chair = 0;     // position as value from 0 to 1 where player position / total number of players
+var CHAIR = 0;     // position as value from 0 to 1 where player position / total number of players
 
 // Your web app's Firebase configuration
 var firebaseConfig = {
@@ -285,12 +285,21 @@ function unselectCard(e, t) {
   // $("#info").text("INFO:");
   selected = null;
 
-  console.log( "%i %i %s", $(t).position().left, $(t).position().top, $(t).css("z-index"));
+  var posx = parseInt($(t).position().left);
+  var posy = parseInt($(t).position().top);
+  
+  var posAr = convertXyToAr(posx, posy);
+    //  "angle" : posAr.angle,
+    //  "r" : posAr.r
+
+  // console.log( "%i %i %s", $(t).position().left, $(t).position().top, $(t).css("z-index"));
   database.ref("game123/cardpos/" + t.id).set( {
-     "posx" : parseInt($(t).position().left), 
-     "posy" : parseInt($(t).position().top), 
+     "posx" : posx, 
+     "posy" : posy, 
      "posz" : parseInt($(t).css("z-index")), 
-     "facedown":$(t).hasClass("highlight") 
+     "facedown":$(t).hasClass("highlight") ,
+     "angle" : posAr.angle,
+     "r" : posAr.r
      });
 }
 
@@ -484,11 +493,15 @@ function showCards() {
 
   for (var j = 0; j < cardsOrder.length; j++) {
    var elem = $("#" + cardsID[cardsOrder[j]]);
+  var px = parseInt(leftPos);
+  var py = parseInt(topPos);
+  var par = convertXyToAr(px,py);
    cardsPosDataObjects[cardsID[cardsOrder[j]]] = {
-                        "posx":parseInt(leftPos), 
-                        "posy":parseInt(topPos),
+                        "posx": px, 
+                        "posy": py,
                         "posz":topz++,
-                        "facedown":elem.hasClass("highlight") } ;
+                        "facedown":elem.hasClass("highlight"),
+                        "angle" : par.angle, "r" : par.r } ;
                           // do not change "face-down"
 
     leftPos += elem.outerWidth() + 10;
@@ -517,27 +530,40 @@ function showCardsStacked() {
 
   for (var j=1 ; j<=13; j++){
 
+    var px = parseInt(leftpos + (j * sp) / 2),
+    var py = parseInt(toppos + j * sp),
+    var par = convertXyToAr(px,py);
      cardsPosDataObjects[j + "D"]={
-        posx : parseInt(leftpos + (j * sp) / 2),
-        posy:  parseInt(toppos + j * sp),
-        posz:  topz++, facedown:false 
+        posx : px,   posy:  py,
+        posz:  topz++, facedown:false,
+        angle: par.angle,  r: par.r 
       };
 
+    var px = parseInt(leftpos + (j * sp) / 2 + sp*2),
+    var py =  parseInt(toppos + j * sp),
+    var par = convertXyToAr(px,py);
     cardsPosDataObjects[j + "H"]={
-        posx : parseInt(leftpos + (j * sp) / 2 + sp*2),
-        posy:  parseInt(toppos + j * sp),
-        posz:  topz++, facedown:false 
+        posx : px,   posy:  py,
+        posz:  topz++, facedown:false,
+        angle: par.angle,  r: par.r 
       };
 
+    var px = parseInt(leftpos + (j * sp) / 2 + sp*4),
+    var py =  parseInt(toppos + j * sp),
+    var par = convertXyToAr(px,py);
     cardsPosDataObjects[j + "S"]={
-        posx : parseInt(leftpos + (j * sp) / 2 + sp*4),
-        posy:  parseInt(toppos + j * sp),
-        posz:  topz++, facedown:false 
+        posx : px,   posy:  py,
+        posz:  topz++, facedown:false,
+        angle: par.angle,  r: par.r 
       };
+
+    var px = parseInt(leftpos + (j * sp) / 2 + sp*6),
+    var py =  parseInt(toppos + j * sp),
+    var par = convertXyToAr(px,py);
     cardsPosDataObjects[j + "C"]={
-        posx : parseInt(leftpos + (j * sp) / 2 + sp*6),
-        posy:  parseInt(toppos + j * sp),
-        posz:  topz++, facedown:false 
+        posx : px,   posy:  py,
+        posz:  topz++, facedown:false,
+        angle: par.angle,  r: par.r 
       };
 
   }
@@ -564,13 +590,15 @@ function showCardsDeck() {
   for (var j = 0; j < cardsOrder.length; j++) {
     var leftPos = parseInt(posCx) + parseInt(posR*Math.sin(j/52*Math.PI*2));
     var topPos = parseInt(posCy) + parseInt(posR*Math.cos(j/52*Math.PI*2));
+    var par = convertXyToAr(leftPos,topPos);
 
     var elem = $("#" + cardsID[cardsOrder[j]]);
     cardsPosDataObjects[cardsID[cardsOrder[j]]] = {
                         "posx": leftPos, 
                         "posy": topPos,
                         "posz": topz++,
-                        "facedown":elem.hasClass("highlight") } ;
+                        "facedown":elem.hasClass("highlight"),
+                        "angle" : par.angle, "r" : par.r } ;
                           // do not change "face-down"
 
   }
@@ -604,13 +632,15 @@ function showCardsCircle() {
   for (var j = 0; j < cardsOrder.length; j++) {
     leftPos = parseInt(posCx) + parseInt(posR*Math.sin(j/52*Math.PI*2));
     topPos = parseInt(posCy) + parseInt(posR*Math.cos(j/52*Math.PI*2));
+    var par = convertXyToAr(leftPos,topPos);
 
     var elem = $("#" + cardsID[cardsOrder[j]]);
     cardsPosDataObjects[cardsID[cardsOrder[j]]] = {
                         "posx": leftPos, 
                         "posy": topPos,
                         "posz": topz++,
-                        "facedown":elem.hasClass("highlight") } ;
+                        "facedown":elem.hasClass("highlight"),
+                        "angle" : par.angle, "r" : par.r } ;
                           // do not change "face-down"
 
   }
@@ -639,7 +669,7 @@ function flipAllDown() {
   database.ref("game123/cardpos/").once("value", function(snapshot) {
       snapshot.forEach(function(data) {
         var o = data.val();
-        updates[data.key]={ posx : o.posx, posy : o.posy, posz: o.posz, facedown: true};
+        updates[data.key]={ posx : o.posx, posy : o.posy, posz: o.posz, facedown: true, angle : o.angle, r : o.r};
       });
   });
  database.ref("game123/cardpos/").update(updates);
@@ -650,7 +680,7 @@ function flipAllUp() {
   database.ref("game123/cardpos/").once("value", function(snapshot) {
       snapshot.forEach(function(data) {
         var o = data.val();
-        updates[data.key]={ posx : o.posx, posy : o.posy, posz: o.posz, facedown: false};
+        updates[data.key]={ posx : o.posx, posy : o.posy, posz: o.posz, facedown: true, angle : o.angle, r : o.r};
       });
   });
   
@@ -682,24 +712,34 @@ function updateCardsDisplayOnTable() {
 
 }
 
-
-
-function relToAbsPosition(posx, posy) {
+/**
+ * Convert an angle + radius value from an xy position 
+ * 
+ * @param {integer} posx height position in px
+ * @param {integer} posy with position in px
+ * @return {object} {deg: angle in radian, r: radius in pixels} 
+ */
+function convertXyToAr(posx, posy) {
     var posCx = $("#table").outerWidth()/2;
     var posCy = $("#table").outerHeight()/2;
 
     var dx = posx - posCx;
     var dy = posy - posCy;
-    return { deg: Math.atan2(dy, dx) - chair*2*Math.PI, 
+    return { angle: Math.atan2(dy, dx) - CHAIR*2*Math.PI, 
              r:   Math.round ( Math.sqrt( dx*dx + dy*dy) ) }
 }
 
-function absToRelPosition(deg, r) {
+/**
+ * Convert an xy position based on an angle + radius
+ * 
+ * @param {double} angle angle in radian
+ * @param {integer} r lenght of radius in px
+ * @return {object} {deg: angle in radian, r: radius in pixels} 
+ */
+function convertArToXy(angle, r) {
     var posCx = $("#table").outerWidth()/2;
     var posCy = $("#table").outerHeight()/2;
 
-  return { posx: (r*Math.cos(deg - chair*2*Math.PI) + posCx), 
-            posy: (r*Math.sin(deg - chair*2*Math.PI) + posCy) }
-  // return { posx: (parseInt(r*Math.cos(-deg - chair*2*Math.PI)) + cx), 
-  //         posy: (parseInt(r*Math.sin(-deg - chair*2*Math.PI)) + cy) }
+  return { posx: (r*Math.cos(angle - CHAIR*2*Math.PI) + posCx), 
+            posy: (r*Math.sin(angle - CHAIR*2*Math.PI) + posCy) }
 }
