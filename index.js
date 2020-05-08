@@ -209,8 +209,10 @@ function drawCardsOnce() {
     snapshot.forEach(function(data) {
       var elem = $("#" + data.key);
       var o = data.val();
-      elem.animate({ "left": o.posx + "px", 
-                    "top":  o.posy + "px" });
+
+      var pxy = convertArToXy(o.angle, o.r);
+      elem.animate({ "left": pxy.posx + "px", 
+                      "top": pxy.posy + "px" });
       elem.css({ "z-index":  o.posz });
 
       if (o.facedown) {
@@ -665,7 +667,6 @@ function flipAllDown() {
   // for (var j = 0; j < cardsID.length; j++) {
   //   database.ref("game123/cardpos/" + cardsID[cardsOrder[j]]).update({ facedown: true });
   // }
-
   var updates = {};   
   database.ref("game123/cardpos/").once("value", function(snapshot) {
       snapshot.forEach(function(data) {
@@ -698,9 +699,11 @@ function updateCardsDisplayOnTable() {
   database.ref("game123/cardpos/").once("value", function(snapshot) {
       snapshot.forEach(function(data) {
         var elem = $("#" + data.key);
+
         var o = data.val();
-        elem.animate({ "left": o.posx + "px", 
-                       "top":  o.posy + "px" });
+        var pxy = convertArToXy(o.angle, o.r);
+        elem.animate({ "left": pxy.posx + "px", 
+                        "top": pxy.posy + "px" });
         elem.css({ "z-index":  o.posz });
 
         if (o.facedown) {
