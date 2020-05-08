@@ -185,8 +185,9 @@ $(document).ready(function() {
     snapshot.forEach(function(data) {
       var elem = $("#" + data.key);
       var o = data.val();
-      elem.animate({ "left": o.posx + "px", 
-                    "top":  o.posy + "px" });
+      var pxy = convertArToXy(o.angle, o.r);
+      elem.animate({ "left": pxy.posx + "px", 
+                      "top": pxy.posy + "px" });
       elem.css({ "z-index":  o.posz });
 
       if (o.facedown) {
@@ -680,7 +681,7 @@ function flipAllUp() {
   database.ref("game123/cardpos/").once("value", function(snapshot) {
       snapshot.forEach(function(data) {
         var o = data.val();
-        updates[data.key]={ posx : o.posx, posy : o.posy, posz: o.posz, facedown: true, angle : o.angle, r : o.r};
+        updates[data.key]={ posx : o.posx, posy : o.posy, posz: o.posz, facedown: false, angle : o.angle, r : o.r};
       });
   });
   
