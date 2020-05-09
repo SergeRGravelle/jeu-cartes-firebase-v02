@@ -186,6 +186,7 @@ $(document).ready(function() {
       var elem = $("#" + data.key);
       var o = data.val();
       var pxy = convertArToXy(o.angle, o.r);
+      console.log("pxy: %i, %i", pxy.posx, pxy.posy );
       elem.animate({ "left": pxy.posx + "px", 
                       "top": pxy.posy + "px" });
       elem.css({ "z-index":  o.posz });
