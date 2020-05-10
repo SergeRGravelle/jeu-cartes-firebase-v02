@@ -98,10 +98,10 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
   color: white;
   border-radius: 10px     10px      0           0;
 }
-.tablobby {
+#tabLobby, #tabHeaderLobby {
   background: #aaa;
 }
-.tabtable {
+#tabTable, #tabHeaderTable {
   background: #888;
 }
 .containerTab {

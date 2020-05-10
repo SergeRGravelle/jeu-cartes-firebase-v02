@@ -149,6 +149,9 @@ $(document).ready(function() {
   document.getElementById("showcardsstacked").addEventListener("click", showCardsStacked);
   document.getElementById("flipup").addEventListener("click", flipAllUp);
   document.getElementById("flipdown").addEventListener("click", flipAllDown);
+  document.getElementById("tabHeaderLobby").addEventListener("click", gotoLobby);
+  document.getElementById("tabHeaderTable").addEventListener("click", gotoTable);
+  
   document.getElementById("order").addEventListener("click", function(e) {
     cardsOrder.sort(function(a, b) {
       return a - b;
@@ -161,13 +164,27 @@ $(document).ready(function() {
 /**
  * 
  */
-function openTab(tabName) {
+function gotoLobby(event) {
   var x = document.getElementsByClassName("containerTab");
   for (var i = 0; i < x.length; i++) {
     x[i].style.display = "none";
   }
-  document.getElementById(tabName).style.display = "block";
+  document.getElementById("tabLobby").style.display = "block";
 }
+
+/**
+ * 
+ */
+function gotoTable(event) {
+  var x = document.getElementsByClassName("containerTab");
+  for (var i = 0; i < x.length; i++) {
+    x[i].style.display = "none";
+  }
+  document.getElementById("tabTable").style.display = "block";
+  drawCardsOnce() ;
+
+}
+
 
 function intiateCardsUpdateFromDB() {
   // listner (".on") realtime database changes and update card positions
@@ -218,42 +235,6 @@ function drawCardsOnce() {
 }
 
 
-
-/**
- * Set the image stored in the Firebase storage to an image getElementById
- * Process errors correctly 
- * 
- */
-function setCardImage(imagename, elemID) {
-
-  // Create a reference to the file we want to download
-  var storageRef = storage.ref();
-  var cardsRef = storageRef.child('cards');
-  var imageRef = cardsRef.child(imagename);
-  
- // Get the download URL
-  imageRef.getDownloadURL().then(function(url) {
-    var img = document.getElementById(elemID);
-    img.src = url;
-  }).catch(function(error) {
-    // A full list of error codes is available at
-    // https://firebase.google.com/docs/storage/web/handle-errors
-    switch (error.code) {
-      case 'storage/object-not-found':
-        console.log("File doesn't exist");
-        break;
-      case 'storage/unauthorized':
-        console.log("User doesn't have permission to access the object");
-        break;
-      case 'storage/canceled':
-        console.log("User canceled the upload");
-        break;
-      case 'storage/unknown':
-        console.log("Unknown error occurred, inspect the server response");
-        break;
-    }
-  });
-}
 
 /**
  * Select card 
@@ -620,8 +601,6 @@ function showCardsCircle() {
                         "posz": topz++,
                         "facedown":elem.hasClass("highlight"),
                         "angle" : par.angle, "r" : par.r } ;
-                          // do not change "face-down"
-
   }
   console.log( JSON.stringify(cardsPosDataObjects) ); debugger;
   database.ref("game123/cardpos/").set(cardsPosDataObjects);
@@ -751,3 +730,39 @@ function convertArToXy(angle, r) {
   // debugger;
 // --- TESTS WAYS OF ADDINT DATA TO A REALTIME DATABASE IN FIREBASE  ----  */
 
+
+/**
+ * Set the image stored in the Firebase storage to an image getElementById
+ * Process errors correctly 
+ * 
+ */
+function setCardImage(imagename, elemID) {
+
+  // Create a reference to the file we want to download
+  var storageRef = storage.ref();
+  var cardsRef = storageRef.child('cards');
+  var imageRef = cardsRef.child(imagename);
+  
+ // Get the download URL
+  imageRef.getDownloadURL().then(function(url) {
+    var img = document.getElementById(elemID);
+    img.src = url;
+  }).catch(function(error) {
+    // A full list of error codes is available at
+    // https://firebase.google.com/docs/storage/web/handle-errors
+    switch (error.code) {
+      case 'storage/object-not-found':
+        console.log("File doesn't exist");
+        break;
+      case 'storage/unauthorized':
+        console.log("User doesn't have permission to access the object");
+        break;
+      case 'storage/canceled':
+        console.log("User canceled the upload");
+        break;
+      case 'storage/unknown':
+        console.log("Unknown error occurred, inspect the server response");
+        break;
+    }
+  });
+}
