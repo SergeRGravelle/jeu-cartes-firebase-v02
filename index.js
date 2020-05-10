@@ -82,6 +82,7 @@ firebase.auth().onAuthStateChanged((user)=> {
   if (user) {
     loginUserButton.textContent = "Logout";
     document.getElementById("loggedInUser").innerHTML = "" + firebase.auth().currentUser.displayName + "";
+    intiateCardsUpdateFromDB();
   //  userId: firebase.auth().currentUser.uid
   }
   else {
@@ -90,31 +91,6 @@ firebase.auth().onAuthStateChanged((user)=> {
   }
 });
 
-
-/*  --- TESTS WAYS OF ADDINT DATA TO A REALTIME DATABASE IN FIREBASE  ----
-  // test writing data to realtime database
-  database.ref("game123/deck/").set( {
-                    card1 : {id:"6C",posx:10,posy:15},
-                    card2 : {id:"7H",posx:12,posy:15}
-                    });
-
-  // test update one property
-  database.ref("game123/deck/card1").update({posy:100});
-
-  // test add a record using push
-  database.ref("game123/deck/").push( {
-                    card3 : {id:"9H",posx:50,posy:60}
-  });
-
-  // test list of objects
-  var dataToImport = {};
-  for (var i=0; i<5; i++) {
-    dataToImport["card"+i] = {id:i, posx:i*2};
-  }
-  database.ref("game123/listofobjects/").set(dataToImport);
-
-  // debugger;
-// --- TESTS WAYS OF ADDINT DATA TO A REALTIME DATABASE IN FIREBASE  ----  */
 
 /**
  *  MAIN 
@@ -179,6 +155,21 @@ $(document).ready(function() {
     });
   });
 
+
+});
+
+/**
+ * 
+ */
+function openTab(tabName) {
+  var x = document.getElementsByClassName("containerTab");
+  for (var i = 0; i < x.length; i++) {
+    x[i].style.display = "none";
+  }
+  document.getElementById(tabName).style.display = "block";
+}
+
+function intiateCardsUpdateFromDB() {
   // listner (".on") realtime database changes and update card positions
   // this allows for another user to change card positions and updates will be reflected in another client session
   database.ref("game123/cardpos/").on("value", function(snapshot) {
@@ -199,11 +190,11 @@ $(document).ready(function() {
     });
     updateTable();
   });
+}
 
-
-});
-
-
+/**
+ * 
+ */
 function drawCardsOnce() {
 
   database.ref("game123/cardpos/").once("value", function(snapshot) {
@@ -384,24 +375,8 @@ function flipCard(e, t) {
       database.ref("game123/cardpos/" + t.id).update({ facedown: true });
     }
   });
-  //    .then(function(snapshot) {
-  //     console.log("key: " + snapshot.key + "  facedown: " + snapshot.child("facedown").val() );
-  //    if (snapshot.child("facedown").val()) {
-  //     database.ref("game123/cardpos/" + t.id + "/facedown/").set(false);
-  //   } else {
-  //     database.ref("game123/cardpos/" + t.id + "/facedown/").set(true);
-  //   }
-  // });
- 
-  // database.ref("game123/cardpos/" + t.id + "/facedown/").once("value", function(data) {
-  //   if (data.val()) {
-  //     database.ref("game123/cardpos/" + t.id + "/facedown/").set(false);
-  //   } else {
-  //     database.ref("game123/cardpos/" + t.id + "/facedown/").set(true);
-  //   }
+ }
 
-  // });
-}
 
 /* https://en.wikipedia.org/wiki/Playing_cards_in_Unicode */
 function genDeck() {
@@ -748,3 +723,31 @@ function convertArToXy(angle, r) {
   return { posx: (r*Math.cos(angle - CHAIR*2*Math.PI) + posCx), 
             posy: (r*Math.sin(angle - CHAIR*2*Math.PI) + posCy) }
 }
+
+
+
+/*  --- TESTS WAYS OF ADDINT DATA TO A REALTIME DATABASE IN FIREBASE  ----
+  // test writing data to realtime database
+  database.ref("game123/deck/").set( {
+                    card1 : {id:"6C",posx:10,posy:15},
+                    card2 : {id:"7H",posx:12,posy:15}
+                    });
+
+  // test update one property
+  database.ref("game123/deck/card1").update({posy:100});
+
+  // test add a record using push
+  database.ref("game123/deck/").push( {
+                    card3 : {id:"9H",posx:50,posy:60}
+  });
+
+  // test list of objects
+  var dataToImport = {};
+  for (var i=0; i<5; i++) {
+    dataToImport["card"+i] = {id:i, posx:i*2};
+  }
+  database.ref("game123/listofobjects/").set(dataToImport);
+
+  // debugger;
+// --- TESTS WAYS OF ADDINT DATA TO A REALTIME DATABASE IN FIREBASE  ----  */
+
